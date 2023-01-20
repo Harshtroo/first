@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <table border="1px"> 
+            <thead>
+                <td>id</td>
+                <td>user name</td>
+                <td>first name</td>
+                <td>last name</td>
+                <td>email</td>
+                <td>gender</td>
+                <td>edit</td>
+                <td>delete</td>
+            </thead>
+        {% for show_data in user_data %}
+            
+        <tr>
+            <td>{{show_data.id}}</td>
+            <td>{{show_data.username}}</td>
+            <td>{{show_data.first_name}}</td>
+            <td>{{show_data.last_name}}</td>
+            <td>{{show_data.email}}</td>
+            <td>{{show_data.gender}}</td>
+            <td><button type = "submit"><a href={% url 'edit' show_data.id %}>Edit</a></button></td>
+            <td><a href="/delete/{{show_data.id}}">delete</a></td>
+
+        </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
