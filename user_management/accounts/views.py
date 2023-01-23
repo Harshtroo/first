@@ -82,7 +82,7 @@ class Login(View):
 #     else:
 #         login_form = LoginForm()
 #         return render(request,"login.html",{'login':login_form})
-    
+
 class ShowData(View):
     '''show user all data'''
     def get(self,request):
@@ -92,33 +92,49 @@ class ShowData(View):
         context = {'user_data':users}
         return render (request,templates_name,context)
 
-def edit(request, e_id):
+class Edit(View):
     '''edit user details'''
-    edit_data = User.objects.get(pk=e_id)
-    if request.method == 'POST':
-        edit_user_form = UpdateForm(request.POST, instance=edit_data)
-        if edit_user_form.is_valid():
-            edit_user_form.save()
+    def get(self,request,e_id):
+        '''edit get data'''
+        templates_name = 'edit.html'
+        edit_data = User.objects.get(pk=e_id)
+        form_class  = UpdateForm(instance=edit_data)
+        return render(request,templates_name,context={'edit_form':form_class})
+
+    
+    def post(self,request,e_id):
+        '''edit get data'''
+        form_class  = UpdateForm(request.POST,instance=User.objects.get(pk=e_id))
+        if form_class.is_valid():
+            form_class.save()
             return redirect('show_data')
-    else:
-        edit_form = UpdateForm(instance=edit_data)
-        context = {'user_edit':edit_data, "edit_form":edit_form}
-        return render(request,"edit.html",context)
+        
+    # '''function base'''
+# def edit(request,id):
+    
+#     edit_data = User.objects.get(pk=id)
+#     if request.method == 'POST':
+#         print("post request")
+#         edit_user_form = UpdateForm(request.POST, instance=edit_data)
+#         if edit_user_form.is_valid():
+#             edit_user_form.save()
+#             print("????save")
+#             return redirect('show_data')
+#     else:
+#         edit_form = UpdateForm(instance=edit_data)
+#         context = {'user_edit':edit_data, "edit_form":edit_form}
+#         return render(request,"edit.html",context)
 
 def delete(request,e_id):
     '''user account delete'''
-    user_delete = User.objects.get(id=e_id)
-    if request.method == 'POST':
-        user_delete.soft_delete()
-        # users = User.objects.all()
-        # context = {'user_delete':users}
-        return redirect('show_data')
-    delete_form = DeleteForm(instance=user_delete)
-    context = {'delete_form':delete_form}
-    return render (request,"delete.html",context)
+    User.objects.get(id=e_id).soft_delete()
 
-def logout_button(request):
-    '''logout function'''
-    logout(request)
-    messages.info(request,"Logged out successfulluy")
-    return redirect('home')
+    return redirect('show_data')
+
+class Logout(View):
+    '''logout class'''y
+    def get(self,request):
+        '''logout function'''
+        logout(request)
+        messages.info(request,"Logged out successfulluy")
+        return redirect('home')

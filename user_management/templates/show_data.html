@@ -21,7 +21,7 @@
             <td>{{show_data.last_name}}</td>
             <td>{{show_data.email}}</td>
             <td>{{show_data.gender}}</td>
-            <td><button type = "submit"><a href={% url 'edit' show_data.id %}>Edit</a></button></td>
+            <td><a href="/edit/{{show_data.id}}">Edit</a></td>            
             <td><a href="/delete/{{show_data.id}}">delete</a></td>
 
         </tr>
