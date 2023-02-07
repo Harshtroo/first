@@ -12,7 +12,7 @@ class User(AbstractUser):
     gender = models.CharField(choices=gender_choice,max_length=6)
  
     def __str__(self):
-        return f" {self.username} - ID {self.id}"
+        return f" {self.username} - ID {self.id} -first name : {self.first_name}"
       
     def soft_delete(self):
         '''soft delete funcction'''
