@@ -4,7 +4,7 @@
         <h2>user form</h2>
         <form method="POST">
             {% csrf_token %}
-            {{edit_form.as_p}}
+            {{user_form.as_p}}
             <button type="submit">Update</button>
         </form>
     </body>

@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import make_password
 
 choice_gender = (
     ("gender","gender"),
-    ("m","male"),
+    ("male","male"),
     ("female","female")
 )
 class RegistrationForm(forms.ModelForm):

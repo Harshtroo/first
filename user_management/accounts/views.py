@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views import View
-from django.views.generic import TemplateView,CreateView,UpdateView,DeleteView
+from django.views.generic import TemplateView,CreateView,DeleteView,DetailView,UpdateView
 from django.urls import reverse,reverse_lazy
 
 class Home(TemplateView):
@@ -54,14 +54,15 @@ class Register(CreateView):
         #     form = RegistrationForm()
         #     return render(request,"register.html",{'form':form})
 
-class Login(View):
+class Login(CreateView):
     '''login class '''
     model = User
     form_class  = LoginForm
     template_name = "login.html"
+    success_url = "logout"
 
     def get_success_url(self,request):
-        return render(request,'login_home.html')
+        return render (request,'login_home.html')
 
     # def form_valid(self,form,request):
     #     return HttpResponseRedirect(self.get_success_url())
@@ -118,25 +119,39 @@ class ShowData(TemplateView):
     #     '''shoe data get'''
     #     templates_name = 'show_data.html'
     #     users =User.objects.filter(is_deleted=False)
-    #     context = {'user_data':users}   
+    #     context = {'user_data':users}
     #     return render (request,templates_name,context)
 
-class Edit(UpdateView):
+class Edit(DetailView,UpdateView):
     '''edit user details'''
-    template_name = 'edit.html'
+    template_name   = 'edit.html'
     form_class = UpdateForm
     model = User
+    success_url = 'show_data'
+    # context_object_name = 'my_edit_form'
+    # queryset = User.objects.get()
+
+    def get(self,request,e_id,*args,**kwagrs):
+        context = {}
+        context['user_form'] = UpdateForm(instance=User.objects.get(id=e_id))
+        return render(request,"edit.html",context)
     
-    # def form_valid(self, form):
-    #     return super().form_valid(form)
-    # def get_object(self,*args,**kwargs):
-        
-    
-    #class based views 
-    # def get(self,request,e_id):
+    def post(self,request,e_id, *args, **kwargs):
+        # context = {}
+        form = self.get_form()
+        form = UpdateForm(request.POST,instance=User.objects.get(id=e_id))
+        if form.is_valid():
+            form.save()
+        return redirect('show_data')
+
+    # def get_success_url(self):
+    #     return reverse_lazy('show_data',kwargs = {'pk':self.get_object().id})
+
+    #class based views
+    # def get(self,request,pk):
     #     '''edit get data'''
     #     templates_name = 'edit.html'
-    #     edit_data = User.objects.get(pk=e_id)
+    #     edit_data = User.objects.get(id=pk)
     #     form_class  = UpdateForm(instance=edit_data)
     #     return render(request,templates_name,context={'edit_form':form_class})
 
