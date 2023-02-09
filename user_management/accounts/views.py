@@ -5,7 +5,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views import View
-from django.views.generic import TemplateView,CreateView,DeleteView,DetailView,UpdateView
+from django.views.generic import TemplateView,CreateView,DeleteView,DetailView,UpdateView,ListView,RedirectView
+from django.contrib.auth.views import LoginView
 from django.urls import reverse,reverse_lazy
 
 class Home(TemplateView):
@@ -54,18 +55,20 @@ class Register(CreateView):
         #     form = RegistrationForm()
         #     return render(request,"register.html",{'form':form})
 
-class Login(CreateView):
+class Login(LoginView):
     '''login class '''
-    model = User
-    form_class  = LoginForm
+    # model = User
+    # form_class  = LoginForm
     template_name = "login.html"
     success_url = "logout"
+    redirect_authenticated_user = True
 
-    def get_success_url(self,request):
-        return render (request,'login_home.html')
+    def get_success_url(self,request,*args,**kwagrs):
+        return render(request,"login_home.html")
 
-    # def form_valid(self,form,request):
-    #     return HttpResponseRedirect(self.get_success_url())
+    def form_invalid(self,form):
+        messages.error(self.request,"Invalid username or password.")
+        return self.render_to_response  (self.get_context_data(form=form))
 
     # def get (self,request):
     #     '''login get '''
@@ -108,7 +111,7 @@ class Login(CreateView):
 #         login_form = LoginForm()
 #         return render(request,"login.html",{'login':login_form})
 
-class ShowData(TemplateView):
+class ShowData(ListView):
     '''show user all data'''
     template_name = 'show_data.html'
     def get_context_data(self,**kwargs):
@@ -187,7 +190,7 @@ class Delete(DeleteView):
     #     User.objects.get(id=e_id).soft_delete()
     #     return redirect('show_data')
 
-class Logout(View):
+class Logout(RedirectView):
     '''logout class'''
     def get(self,request):
         '''logout function'''
