@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.Home.as_view(),name='home'),
     path('register/',views.Register.as_view(),name = "register"),
     path('login/',views.Login.as_view(),name= "login"),
+    path('after_login/',views.AfterLogin.as_view(),name="after_login"),
     path('show_data/',views.ShowData.as_view(),name="show_data"),
     path('edit/<int:e_id>/',views.Edit.as_view(),name="edit"),
     path('delete/<int:pk>/',views.Delete.as_view(),name="delete"),

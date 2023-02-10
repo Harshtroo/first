@@ -1,10 +1,10 @@
-from django.shortcuts import render,HttpResponse,redirect,HttpResponseRedirect
+from django.shortcuts import render,redirect
 from .forms import RegistrationForm,UpdateForm,DeleteForm,LoginForm 
 from .models import User
-from django.contrib.auth import authenticate
+# from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.contrib import messages
-from django.views import View
+# from django.views import View
 from django.views.generic import TemplateView,CreateView,DeleteView,DetailView,UpdateView,ListView,RedirectView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse,reverse_lazy
@@ -58,17 +58,24 @@ class Register(CreateView):
 class Login(LoginView):
     '''login class '''
     # model = User
-    # form_class  = LoginForm
+    form_class  = LoginForm
     template_name = "login.html"
-    success_url = "logout"
+    success_url = "after_login"
     redirect_authenticated_user = True
 
-    def get_success_url(self,request,*args,**kwagrs):
-        return render(request,"login_home.html")
-
+    def get_success_url(self,*args,**kwagrs):
+        return self.success_url('after_login')
+    
     def form_invalid(self,form):
         messages.error(self.request,"Invalid username or password.")
         return self.render_to_response  (self.get_context_data(form=form))
+
+class AfterLogin(TemplateView):
+    "after login this view call"
+    template_name = 'login_home.html'
+    
+    
+
 
     # def get (self,request):
     #     '''login get '''
@@ -114,10 +121,11 @@ class Login(LoginView):
 class ShowData(ListView):
     '''show user all data'''
     template_name = 'show_data.html'
-    def get_context_data(self,**kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user_data'] =  User.objects.filter(is_deleted=False)
-        return context
+    model = User
+    queryset =User.objects.filter(is_deleted = False)
+    context_object_name = 'user_data'
+    ordering = ['username']
+
     # def get(self,request):
     #     '''shoe data get'''
     #     templates_name = 'show_data.html'
@@ -138,7 +146,7 @@ class Edit(DetailView,UpdateView):
         context = {}
         context['user_form'] = UpdateForm(instance=User.objects.get(id=e_id))
         return render(request,"edit.html",context)
-    
+
     def post(self,request,e_id, *args, **kwargs):
         # context = {}
         form = self.get_form()
